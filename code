@@ -30,7 +30,10 @@ def hand(balence):
     # Bet
    
     while True:
-        bet = int(input("How much do you want to bet?"))
+        try:
+            bet = int(input("How much do you want to bet?"))
+        except ValueError:
+            bet = balence+1
         if bet > balence:
             print("You cannot bet over your balence")
         else:
