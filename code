@@ -1,0 +1,210 @@
+'''
+Need to add splits
+Need to add doubles
+'''
+#Black Jack
+import random
+times = int(input("How many times do you want to play?"))
+new_balence = float(input("How much money do you have?")) 
+print("bal: "+str(new_balence))
+
+# Deck Creation
+
+deck_dictionary =  {}
+for i in range(1,10):
+    deck_dictionary["club "+str(i)] = i
+    deck_dictionary["spade "+str(i)] = i
+    deck_dictionary["heart "+str(i)] = i
+    deck_dictionary["diamond "+str(i)] = i
+for i in range(10,14):
+    deck_dictionary["club "+str(i)] = 10
+    deck_dictionary["spade "+str(i)] = 10
+    deck_dictionary["heart "+str(i)] = 10
+    deck_dictionary["diamond "+str(i)] = 10
+decknot_dictionary = dict(deck_dictionary)
+print("")
+print("")
+
+def hand(balence):
+    
+    # Bet
+   
+    while True:
+        bet = int(input("How much do you want to bet?"))
+        if bet > balence:
+            print("You cannot bet over your balence")
+        else:
+            break
+    balence = balence - bet
+    
+    # Deal
+    
+    one_card = random.choice(list(decknot_dictionary))
+    decknot_dictionary.pop(one_card)
+    down_card =  random.choice(list(decknot_dictionary))
+    decknot_dictionary.pop(down_card)
+    two_card = random.choice(list(decknot_dictionary))
+    decknot_dictionary.pop(two_card)
+    up_card = random.choice(list(decknot_dictionary))
+    decknot_dictionary.pop(up_card)
+    player_hand = [deck_dictionary.get(one_card),deck_dictionary.get(two_card)]
+    dealer_hand = [deck_dictionary.get(up_card),deck_dictionary.get(down_card)]
+    print("Dealer has "+str(dealer_hand[0]))
+    print("You have "+str(player_hand[0])+", "+str(player_hand[1]))
+    
+    # player blackjack
+    if player_hand[0] == 1:
+        if player_hand[0] + player_hand[1] == 11:
+            print("Black Jack!")
+            balence = balence + bet*1.5
+            return balence
+    if player_hand[1] == 1:
+        if player_hand[0] + player_hand[1] == 11:
+            print("Black Jack!")
+            balence = balence + bet*2.5
+            return balence
+
+    # dealer blackjack
+    if dealer_hand[0] == 1:
+        insurance = input("Do you want insurance (yes/no)?")
+        if dealer_hand[1] == 10:
+            print("Dealer has Blackjack")
+            if insurance == "yes":
+                print("You took insurance")
+                balence = balence + bet
+                return balence
+            if insurance == "no":
+                print("You didn't take insurance")
+                return balence
+        else:
+            print("Dealer doesn't have Blackjack")
+            if insurance == "yes":
+                print("You took insurance")
+                balence = balence - (bet/2)
+            if insurance == "no":
+                print("You didn't take insurance")
+
+    #player choice
+    i = 2
+    while True:
+        player = "B"
+        choice = input("(hit or stand)?: ")
+        for i in range(len(player_hand)):
+            if player_hand[i] == 1:
+                player = "A"
+                break    
+        if choice == "hit":
+            new_card = random.choice(list(decknot_dictionary))
+            decknot_dictionary.pop(new_card)
+            player_hand.append(deck_dictionary.get(new_card))
+            print("You drawn "+str(deck_dictionary.get(new_card)))
+            if player == "A" and sum(player_hand) <= 11:
+                print("Your hand is: "+str(sum(player_hand)+10))
+            else:
+                print("Your hand is: "+str(sum(player_hand)))
+            if sum(player_hand) > 21:
+                print("You bust")
+                return balence
+        elif player == "A" and choice == "stand" and sum(player_hand) <= 11:
+            print("You stand: "+str(sum(player_hand)+10))
+            break
+        elif choice == "stand":
+            print("You stand: "+str(sum(player_hand)))
+            break
+    
+    # dealer choice
+    print("Dealer has "+str(sum(dealer_hand)))
+    while True:
+        dealer = "B"
+        for i in range(len(dealer_hand)):
+            if dealer_hand[i] == 1:
+                dealer = "A"
+                break
+        if dealer == "A":
+            if sum(dealer_hand) < 7:
+                new_card = random.choice(list(decknot_dictionary))
+                decknot_dictionary.pop(new_card)
+                dealer_hand.append(deck_dictionary.get(new_card))
+                if sum(dealer_hand) <= 11:
+                    print("Dealer hand is: "+str(sum(dealer_hand)+10))
+                else:
+                    print("Dealer hand is: "+str(sum(dealer_hand)))
+                if sum(dealer_hand)+10 > 21:
+                    end = True
+                    print("Dealer bust !")
+                    break
+            if sum(dealer_hand) >= 7:
+                print("Dealer stands: "+str(sum(dealer_hand)+10))
+                break
+        else:
+            if sum(dealer_hand) < 17:
+                new_card = random.choice(list(decknot_dictionary))
+                decknot_dictionary.pop(new_card)
+                dealer_hand.append(deck_dictionary.get(new_card))
+                print("Dealer drawn "+str(dealer_hand[-1]))
+                if sum(dealer_hand) > 21:
+                    print("Dealer bust !")
+                    balence = balence + bet*2
+                    return balence
+            if sum(dealer_hand) >= 17:
+                print("Dealer stands: "+str(sum(dealer_hand)))
+                break
+            
+            
+            
+    # Figuring out who wins
+    if dealer == player:
+        if sum(dealer_hand) > sum(player_hand):
+            return balence
+        elif sum(player_hand) > sum(dealer_hand):
+            balence = balence + bet*2
+            return balence
+        else:
+            balence = balence + bet
+            return balence
+    elif dealer == "A":
+        if sum(dealer_hand)+10 > 21:
+            if sum(dealer_hand) > sum(player_hand):
+                return balence
+            elif sum(player_hand) > sum(dealer_hand):
+                balence = balence + bet*2
+                return balence
+            else:
+                balence = balence + bet
+                return balence
+        else:
+            if sum(dealer_hand)+10 > sum(player_hand):
+                return balence
+            elif sum(player_hand) > sum(dealer_hand)+10:
+                balence = balence + bet*2
+                return balence
+            else:
+                balence = balence + bet
+                return balence
+    elif dealer == "B":
+        if sum(player_hand)+10 > 21:
+            if sum(dealer_hand) > sum(player_hand):
+                return balence
+            elif sum(player_hand) > sum(dealer_hand):
+                balence = balence + bet*2
+                return balence
+            else:
+                balence = balence + bet
+                return balence
+        else:
+            if sum(dealer_hand) > sum(player_hand)+10:
+                return balence
+            elif sum(player_hand)+10 > sum(dealer_hand):
+                balence = balence + bet*2
+                return balence
+            else:
+                balence = balence + bet
+                return balence
+for i in range(1,times+1):
+    new_balence = hand(new_balence)
+    print("You now have "+str(new_balence)+" dollars")
+    print("")
+    print("")
+    if times % 9 == 0:
+        print("Shuffling")
+        decknot_dictionary = dict(deck_dictionary)
