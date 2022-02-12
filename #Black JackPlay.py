@@ -8,8 +8,6 @@ peek10 = True #dealer peeks when his up card is 10 #works
 
 times = int(input("How many times do you want to play?"))
 new_balence = float(input("How much money do you have?")) 
-times = 10000
-new_balence = 1000
 print("bal: "+str(new_balence))
 # Deck Creation
 
